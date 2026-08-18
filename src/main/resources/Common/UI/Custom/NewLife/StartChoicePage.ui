@@ -1,0 +1,57 @@
+$C = "../Common.ui";
+
+$C.@PageOverlay {
+  LayoutMode: Middle;
+
+  Group {
+    LayoutMode: Center;
+
+    $C.@DecoratedContainer {
+      Anchor: (Width: 420, Height: 540);
+
+      #Title {
+        Label #PageTitle {
+          Style: (...$C.@TitleStyle, HorizontalAlignment: Center);
+          Padding: (Horizontal: 19);
+          Text: %server.customUI.newLife.title;
+        }
+      }
+
+      #Content {
+        LayoutMode: Top;
+        Padding: (Top: 16, Horizontal: 16, Bottom: 28);
+
+        Group #TickboxList {
+          LayoutMode: Top;
+          Anchor: (Bottom: 10);
+        }
+
+        Label #StatusLabel {
+          Style: (...$C.@DefaultLabelStyle, Wrap: true, HorizontalAlignment: Center);
+          Padding: (Bottom: 8);
+          Text: "";
+        }
+
+        Group {
+          LayoutMode: Center;
+          Anchor: (Bottom: 8);
+
+          Group #OptionList {
+            LayoutMode: Top;
+            Anchor: (Width: 280);
+          }
+        }
+
+        Group {
+          LayoutMode: Center;
+
+          $C.@TextButton #BackButton {
+            Text: %server.customUI.newLife.back;
+            Visible: false;
+            Anchor: (Width: 280, Height: 48, Top: 6);
+          }
+        }
+      }
+    }
+  }
+}

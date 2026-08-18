@@ -1,0 +1,6 @@
+$C = "../Common.ui";
+
+$C.@TextButton #OptionButton {
+  Anchor: (Bottom: 8, Width: 280, Height: 48);
+  Text: "";
+}
