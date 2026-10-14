@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.hexvane"
-version = "1.1.0"
+version = "1.2.0"
 val javaVersion = 25
 
 repositories {
@@ -28,7 +28,7 @@ hytale {
 
     // Uncomment to develop against the pre-release version of the game.
     //
-    updateChannel = "pre-release"
+    // updateChannel = "pre-release"
 }
 
 java {

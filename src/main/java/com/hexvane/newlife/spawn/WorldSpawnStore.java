@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.hypixel.hytale.builtin.instances.config.InstanceWorldConfig;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.WorldConfig;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,6 +26,8 @@ public final class WorldSpawnStore {
 
     private Path dataFile;
     private final Map<String, WorldSpawnState> worlds = new ConcurrentHashMap<>();
+    /** State for worlds without a start of their own. Kept for the session only and never saved. */
+    private final Map<String, WorldSpawnState> temporaryWorlds = new ConcurrentHashMap<>();
 
     public void initialize(@Nonnull Path dataDirectory) {
         try {
@@ -37,7 +41,18 @@ public final class WorldSpawnStore {
 
     @Nonnull
     public WorldSpawnState world(@Nonnull World world) {
-        return worlds.computeIfAbsent(worldKey(world), ignored -> new WorldSpawnState());
+        Map<String, WorldSpawnState> states = hasOwnStart(world) ? worlds : temporaryWorlds;
+        return states.computeIfAbsent(worldKey(world), ignored -> new WorldSpawnState());
+    }
+
+    /**
+     * Whether a world keeps a start of its own. An instance, or any other world that is thrown away when it closes,
+     * does not: every copy is a new world name, so it would look like a world where nobody has chosen yet each time
+     * a player enters one.
+     */
+    public static boolean hasOwnStart(@Nonnull World world) {
+        WorldConfig config = world.getWorldConfig();
+        return InstanceWorldConfig.get(config) == null && !config.isDeleteOnRemove() && !config.isDeleteOnUniverseStart();
     }
 
     @Nonnull

@@ -59,6 +59,11 @@ public final class NewLifePlugin extends JavaPlugin {
         if (world == null || ref == null || !ref.isValid()) {
             return;
         }
+        // This runs every time a player arrives in a world, not only when they join the server. A world that keeps
+        // no start of its own never asks for one.
+        if (!WorldSpawnStore.hasOwnStart(world)) {
+            return;
+        }
         world.execute(() -> {
             if (!ref.isValid()) {
                 return;

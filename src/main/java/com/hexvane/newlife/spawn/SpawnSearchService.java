@@ -5,7 +5,7 @@ import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
+import com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags;
 import com.hypixel.hytale.server.core.universe.world.worldgen.IWorldGen;
 import com.hypixel.hytale.server.worldgen.cave.Cave;
 import com.hypixel.hytale.server.worldgen.cave.CaveGenerator;
@@ -585,11 +585,11 @@ public final class SpawnSearchService {
                 int x = candidate.x + dx;
                 int z = candidate.z + dz;
                 long index = ChunkUtil.indexChunkFromBlock(x, z);
-                checks.add(world.getChunkAsync(index).thenApplyAsync(chunk -> {
-                    if (chunk == null) {
+                checks.add(world.getChunkStore().getChunkReferenceAsync(index, GetChunkFlags.SET_TICKING).thenApplyAsync(chunkRef -> {
+                    if (chunkRef == null || !chunkRef.isValid()) {
                         return null;
                     }
-                    return standTransform(world, chunk, x, z, candidate);
+                    return standTransform(world, x, z, candidate);
                 }, world));
             }
         }
@@ -599,7 +599,6 @@ public final class SpawnSearchService {
     @Nullable
     private static Transform standTransform(
         @Nonnull World world,
-        @Nonnull WorldChunk chunk,
         int x,
         int z,
         @Nonnull Candidate candidate
@@ -609,9 +608,9 @@ public final class SpawnSearchService {
         }
         Integer feetY;
         if (candidate.stayNearY) {
-            feetY = SpawnSafety.findSafeFeetNear(world, chunk, x, z, candidate.y, candidate.underground);
+            feetY = SpawnSafety.findSafeFeetNear(world, x, z, candidate.y, candidate.underground);
         } else {
-            feetY = SpawnSafety.findSafeFeetY(world, chunk, x, z, candidate.y, candidate.underground);
+            feetY = SpawnSafety.findSafeFeetY(world, x, z, candidate.y, candidate.underground);
         }
         if (feetY == null) {
             return null;

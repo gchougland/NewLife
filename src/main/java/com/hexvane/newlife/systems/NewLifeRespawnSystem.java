@@ -5,6 +5,7 @@ import com.hexvane.newlife.spawn.PlayerSpawnState;
 import com.hexvane.newlife.spawn.SpawnApplyService;
 import com.hexvane.newlife.spawn.SpawnRequest;
 import com.hexvane.newlife.spawn.WorldSpawnState;
+import com.hexvane.newlife.spawn.WorldSpawnStore;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -41,6 +42,10 @@ public final class NewLifeRespawnSystem extends RespawnSystems.OnRespawnSystem {
         }
         World world = store.getExternalData().getWorld();
         if (world == null) {
+            return;
+        }
+        // An instance has its own respawn rules and no start of its own.
+        if (!WorldSpawnStore.hasOwnStart(world)) {
             return;
         }
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
